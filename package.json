@@ -1,0 +1,17 @@
+{
+  "name": "calibre-spliter",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js && http-server",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "cheerio": "^1.0.0-rc.5",
+    "fs-extra": "^9.0.1",
+    "http-server": "^0.12.3"
+  }
+}
