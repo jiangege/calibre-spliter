@@ -7,4 +7,4 @@
 1. 使用`calibre`转zip，提取出来
 2. 扔入`source`目录
 3. `npm run start`
-4. 使用`ie`访问
+4. 使用`ie`访问`dest`目录中需要导入的书的路径
