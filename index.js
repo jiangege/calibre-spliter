@@ -14,13 +14,17 @@ sourceDir.forEach(bookName => {
   const indexFileName = srcFiles.find(file => path.extname(file) === '.html');
   const indexBaseName = path.basename(indexFileName, '.html');
   const $ = cheerio.load(fs.readFileSync(`${__dirname}/sources/${bookName}/${indexFileName}`));
-  const chapterIdList = [...new Set($('ul li a').map((i, el) => $(el).attr('href').split('#')[1]).get())];
+  const chapter = [...new Set($('ul li a').map((i, el) => {
+    return {
+      title: $(el).text(),
+      id: $(el).attr('href').split('#')[1]
+    }
+  }).get())];
   const $$ = cheerio.load(fs.readFileSync(`${__dirname}/sources/${bookName}/${indexBaseName}_files/index.html`));
 
-
-  chapterIdList.forEach(id => {
+  chapter.forEach(({ id, title }) => {
     const chapterTitle$ = $$(`#${id}`)
-    $$(`<p>$chapter</p><h1>${chapterTitle$.parent().text()}</h1>`).insertBefore(chapterTitle$.parent());
+    $$(`<p>$chapter</p><h1 id="chapterTitle">${title}</h1>`).insertBefore(chapterTitle$.parent());
   });
 
   const chapterHtmlList = $$('body .calibreEbookContent').html().split('<p>$chapter</p>');
@@ -45,7 +49,7 @@ sourceDir.forEach(bookName => {
       </html>
     `);
 
-    const chapterName = new$('h1').text();
+    const chapterName = new$('#chapterTitle').text();
     fse.ensureFileSync(`${__dirname}/dest/${bookName}/${chapterName}.html`);
     fs.writeFileSync(`${__dirname}/dest/${bookName}/${chapterName}.html`, new$.html());
     const resources = fs.readdirSync(`${__dirname}/sources/${bookName}/${indexBaseName}_files/`);
@@ -53,7 +57,7 @@ sourceDir.forEach(bookName => {
     imgFiles.forEach(filename => {
       fse.copy(`${__dirname}/sources/${bookName}/${indexBaseName}_files/${filename}`, `${__dirname}/dest/${bookName}/${filename}`)
     })
-    chapterLinks.push(`<a href="${chapterName}.html">${chapterName}</a>`);
+    chapterLinks.push(`<a href="${encodeURIComponent(chapterName)}.html">${chapterName}</a>`);
   });
   fs.writeFileSync(`${__dirname}/dest/${bookName}/index.html`, `
     <!DOCTYPE html>
